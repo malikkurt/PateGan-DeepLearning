@@ -1,4 +1,3 @@
-# Necessary packages
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -7,6 +6,8 @@ import argparse
 import numpy as np
 import pandas as pd
 import os
+import matplotlib
+matplotlib.use('Agg')
 
 from data_preprocess import data_preprocess
 from utils import supervised_model_training
@@ -17,13 +18,13 @@ from evaluation_in_prod import eval_metrics
 
 
 #%% 
-def pategan_main (args):
+def pategan_main (args,filePath):
   
   # Supervised model types
   models = ['logisticregression','randomforest', 'gaussiannb','bernoullinb',
             'svmlin', 'Extra Trees','LDA', 'AdaBoost','Bagging','gbm', 'xgb']
   
-  data_dim,train_data,test_data = data_preprocess("C:\\Users\\malik\\Desktop\\PateGan-DeepLearning\\data\\Input\\adult_labels.csv")
+  data_dim,train_data,test_data = data_preprocess(filePath)
   
   # Define outputs
   results = np.zeros([len(models), 4])
@@ -92,7 +93,6 @@ def pategan_main (args):
 #%%  
 if __name__ == '__main__':
   
-  # Inputs for the main function
   parser = argparse.ArgumentParser()
   parser.add_argument(
       '--data_no',
@@ -150,28 +150,62 @@ if __name__ == '__main__':
       default=1.0,
       type=float)
   
-  args = parser.parse_args() 
+#   args = parser.parse_args() 
   
   # Calls main function  
-  results, ori_data, synth_data = pategan_main(args)
+  #   results, ori_data, synth_data = pategan_main(args)
 
-  today = datetime.today().strftime("%d_%m_%Y")
+#   results, ori_data, synth_data = pategan_main(args,"C:\\Users\\malik\\Desktop\\PateGan-DeepLearning\\data\\Input\\adult_labels.csv")
 
-  # Çıktı dizinini oluştur
-  base_output_dir = "data/Output"
-  csv_filename = "example2.csv"  # CSV dosyasının adı (gerçek dosya adınızı buraya koyun)
-  output_dir = os.path.join(base_output_dir, f"{today}_{os.path.splitext(csv_filename)[0]}")
-  os.makedirs(output_dir, exist_ok=True)
+# #   today = datetime.today().strftime("%d_%m_%Y")
 
-  # Orijinal veri DataFrame'ini oluştur
-  ori_data_df = pd.DataFrame(ori_data, columns=[f"feature_{i}" for i in range(len(ori_data[0]))])
-  ori_data_path = os.path.join(output_dir, "ori_data.csv")
-  ori_data_df.to_csv(ori_data_path, index=False)
+# #   # Çıktı dizinini oluştur
+# #   base_output_dir = "data/Output"
+# #   csv_filename = "example2.csv"  # CSV dosyasının adı (gerçek dosya adınızı buraya koyun)
+# #   output_dir = os.path.join(base_output_dir, f"{today}_{os.path.splitext(csv_filename)[0]}")
+# #   os.makedirs(output_dir, exist_ok=True)
 
-  # Sentezlenmiş veri DataFrame'ini oluştur
-  synth_data_df = pd.DataFrame(synth_data, columns=[f"feature_{i}" for i in range(len(synth_data[0]))])
-  synth_data_path = os.path.join(output_dir, "synthetic_data.csv")
-  synth_data_df.to_csv(synth_data_path, index=False)
+# #   # Orijinal veri DataFrame'ini oluştur
+# #   ori_data_df = pd.DataFrame(ori_data, columns=[f"feature_{i}" for i in range(len(ori_data[0]))])
+# #   ori_data_path = os.path.join(output_dir, "ori_data.csv")
+# #   ori_data_df.to_csv(ori_data_path, index=False)
+
+# #   # Sentezlenmiş veri DataFrame'ini oluştur
+# #   synth_data_df = pd.DataFrame(synth_data, columns=[f"feature_{i}" for i in range(len(synth_data[0]))])
+# #   synth_data_path = os.path.join(output_dir, "synthetic_data.csv")
+# #   synth_data_df.to_csv(synth_data_path, index=False)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#   # Çıktı dizinini oluştur
+#   base_output_dir = "data/Output"
+#   csv_filename = "example2.csv"  # CSV dosyasının adı (gerçek dosya adınızı buraya koyun)
+#   output_dir = os.path.join(base_output_dir, f"{today}_{os.path.splitext(csv_filename)[0]}")
+#   os.makedirs(output_dir, exist_ok=True)
+
+#   # Orijinal veri DataFrame'ini oluştur
+#   ori_data_df = pd.DataFrame(ori_data, columns=[f"feature_{i}" for i in range(len(ori_data[0]))])
+#   ori_data_path = os.path.join(output_dir, "ori_data.csv")
+#   ori_data_df.to_csv(ori_data_path, index=False)
+
+#   # Sentezlenmiş veri DataFrame'ini oluştur
+#   synth_data_df = pd.DataFrame(synth_data, columns=[f"feature_{i}" for i in range(len(synth_data[0]))])
+#   synth_data_path = os.path.join(output_dir, "synthetic_data.csv")
+#   synth_data_df.to_csv(synth_data_path, index=False)
 
 #   metrics = eval_metrics(ori_data_df, synth_data_df)
 #   ks_results = metrics.kolmogorov()
