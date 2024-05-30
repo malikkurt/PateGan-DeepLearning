@@ -20,16 +20,13 @@ from evaluation_in_prod import eval_metrics
 #%% 
 def pategan_main (args,filePath):
   
-  # Supervised model types
   models = ['logisticregression','randomforest', 'gaussiannb','bernoullinb',
             'svmlin', 'Extra Trees','LDA', 'AdaBoost','Bagging','gbm', 'xgb']
   
   data_dim,train_data,test_data = data_preprocess(filePath)
   
-  # Define outputs
   results = np.zeros([len(models), 4])
   
-  # Define PATEGAN parameters
   parameters = {'n_s': args.n_s, 'batch_size': args.batch_size, 'k': args.k, 
                 'epsilon': args.epsilon, 'delta': args.delta, 
                 'lamda': args.lamda}
@@ -147,33 +144,30 @@ if __name__ == '__main__':
   parser.add_argument(
       '--lamda',
       help='PATE noise size',
-      default=1.0,
+      default=0.1,
       type=float)
   
-#   args = parser.parse_args() 
+  args = parser.parse_args()    
   
-  # Calls main function  
-  #   results, ori_data, synth_data = pategan_main(args)
+  results, ori_data, synth_data = pategan_main(args,"C:\\Users\\malik\\Desktop\\PateGan-DeepLearning\\data\\Input\\dataset-1\\adult_labels.csv")
 
-#   results, ori_data, synth_data = pategan_main(args,"C:\\Users\\malik\\Desktop\\PateGan-DeepLearning\\data\\Input\\adult_labels.csv")
+  today = datetime.today().strftime("%d_%m_%Y")
 
-# #   today = datetime.today().strftime("%d_%m_%Y")
+  base_output_dir = "data/Output"
+  csv_filename = "example2.csv" 
+  output_dir = os.path.join(base_output_dir, f"{today}_{os.path.splitext(csv_filename)[0]}")
+  os.makedirs(output_dir, exist_ok=True)
 
-# #   # Çıktı dizinini oluştur
-# #   base_output_dir = "data/Output"
-# #   csv_filename = "example2.csv"  # CSV dosyasının adı (gerçek dosya adınızı buraya koyun)
-# #   output_dir = os.path.join(base_output_dir, f"{today}_{os.path.splitext(csv_filename)[0]}")
-# #   os.makedirs(output_dir, exist_ok=True)
+  # Orijinal veri DataFrame'ini oluştur
+  ori_data_df = pd.DataFrame(ori_data, columns=[f"feature_{i}" for i in range(len(ori_data[0]))])
+  ori_data_path = os.path.join(output_dir, "ori_data.csv")
+  ori_data_df.to_csv(ori_data_path, index=False)
 
-# #   # Orijinal veri DataFrame'ini oluştur
-# #   ori_data_df = pd.DataFrame(ori_data, columns=[f"feature_{i}" for i in range(len(ori_data[0]))])
-# #   ori_data_path = os.path.join(output_dir, "ori_data.csv")
-# #   ori_data_df.to_csv(ori_data_path, index=False)
+  # Sentezlenmiş veri DataFrame'ini oluştur
+  synth_data_df = pd.DataFrame(synth_data, columns=[f"feature_{i}" for i in range(len(synth_data[0]))])
+  synth_data_path = os.path.join(output_dir, "synthetic_data.csv")
+  synth_data_df.to_csv(synth_data_path, index=False)
 
-# #   # Sentezlenmiş veri DataFrame'ini oluştur
-# #   synth_data_df = pd.DataFrame(synth_data, columns=[f"feature_{i}" for i in range(len(synth_data[0]))])
-# #   synth_data_path = os.path.join(output_dir, "synthetic_data.csv")
-# #   synth_data_df.to_csv(synth_data_path, index=False)
 
 
 

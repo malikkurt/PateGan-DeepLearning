@@ -9,17 +9,7 @@ from sklearn.linear_model import LogisticRegression
 
 
 def pate_lamda (x, teacher_models, lamda):
-    '''Returns PATE_lambda(x).
-  
-    Args:
-        - x: feature vector
-        - teacher_models: a list of teacher models
-        - lamda: parameter
-    
-    Returns:
-        - n0, n1: the number of label 0 and 1, respectively
-        - out: label after adding laplace noise.
-    '''
+
     y_hat = []
         
     for teacher in teacher_models:            
@@ -39,22 +29,7 @@ def pate_lamda (x, teacher_models, lamda):
 
 
 def pategan(x_train, parameters):
-    '''Basic PATE-GAN framework.
   
-    Args:
-        - x_train: training data
-        - parameters: PATE-GAN parameters
-        - n_s: the number of student training iterations
-        - batch_size: the number of batch size for training student and generator
-        - k: the number of teachers
-        - epsilon, delta: Differential privacy parameters
-        - lamda: noise size
-    
-    Returns:
-        - x_train_hat: generated training data by differentially private generator
-    '''
-  
-    # PATE-GAN parameters
     n_s = parameters['n_s']
     batch_size = parameters['batch_size']
     k = parameters['k']
@@ -62,18 +37,15 @@ def pategan(x_train, parameters):
     delta = parameters['delta']
     lamda = parameters['lamda']
   
-    # Other parameters
     L = 20
     alpha = np.zeros([L])
     epsilon_hat = 0
     
-    # Network parameters
     no, dim = x_train.shape
     z_dim = dim
     student_h_dim = dim
     generator_h_dim = 4 * dim  
   
-    ## Partitioning the data into k subsets
     x_partition = []
     partition_data_no = no // k
     
@@ -84,24 +56,18 @@ def pategan(x_train, parameters):
         temp_x = x_train[temp_idx, :]      
         x_partition.append(temp_x)    
   
-    ## Necessary Functions for building NN models
-    # Xavier Initialization Definition
     def xavier_init(size):
         in_dim = size[0]
         xavier_stddev = 1. / tf.sqrt(in_dim / 2.)
         return tf.random.normal(shape=size, stddev=xavier_stddev)    
         
-    # Sample from uniform distribution
     def sample_Z(m, n):
         return np.random.uniform(-1., 1., size=[m, n])
      
     ## Placeholder
-    # PATE labels
-    Y = tf.compat.v1.placeholder(tf.float32, shape=[None, 1])  
-    # Random Variable    
+    Y = tf.compat.v1.placeholder(tf.float32, shape=[None, 1])   
     Z = tf.compat.v1.placeholder(tf.float32, shape=[None, z_dim])
-   
-    ## NN variables   
+
     # Student
     S_W1 = tf.Variable(xavier_init([dim, student_h_dim]))
     S_b1 = tf.Variable(tf.zeros(shape=[student_h_dim]))
@@ -219,7 +185,7 @@ def pategan(x_train, parameters):
         
         epsilon_hat = np.min(curr_list)    
 
-    ## Outputs
+    
     x_train_hat = sess.run(G_sample, feed_dict={Z: sample_Z(no, z_dim)})
     
     return x_train_hat
